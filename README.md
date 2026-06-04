@@ -1,18 +1,17 @@
 cpp-lru-cache
 =============
 
-Simple and reliable LRU (Least Recently Used) cache for c++ based on hashmap and linkedlist. The library is header only, simple test and example are included.
-It includes standard components and very little own logics that guarantees reliability.
+基于哈希表和双向链表的 C++ LRU（最近最少使用）缓存实现，简单可靠。该库为 header-only 设计，包含简单的测试和示例。
+使用标准组件和少量自定义逻辑，保证可靠性。
 
-Example:
+示例:
 --------
 
-### LRU Cache (header-only)
+### LRU 缓存（header-only）
 
 ```
-/** Creates cache with maximum size of three. When the
-    size is achieved every next element will replace the
-    least recently used one. */
+/** 创建一个最大容量为 3 的缓存。当达到容量上限时，
+    新元素将替换最近最少使用的元素。 */
 cache::lru_cache<std::string, std::string> cache(3);
 
 cache.put("one", "one");
@@ -21,15 +20,14 @@ cache.put("two", "two");
 const std::string& from_cache = cache.get("two");
 ```
 
-### Page Replacement Simulator
+### 页面置换模拟器
 
-Simulates four page replacement algorithms (LRU Counter, LRU Stack,
-Additional-Reference-Bits, Second Chance) on page reference traces
-and outputs results as tables and ASCII bar charts.
+模拟四种页面置换算法（LRU 计数器、LRU 栈、额外引用位、二次机会），
+在多种页面引用序列上运行，并以表格和 ASCII 条形图输出结果。
 
-Three modes are supported:
+支持三种运行模式：
 
-**Mode 1 — Single trace file** (supports `.gz` and hex‑address traces):
+**模式 1 — 单个 trace 文件**（支持 `.gz` 压缩文件和十六进制地址 trace）：
 ```
 cd build
 make page_simulator
@@ -37,24 +35,25 @@ make page_simulator
 ./page_simulator --file traces/emacs.gz --frames 4,8,16,32 --pagesize 4096
 ```
 
-**Mode 2 — Built-in synthetic traces** (Classic, TightLoop, Program, Locality, Sequential, Random):
+**模式 2 — 内置合成 trace**（Classic、TightLoop、Program、Locality、Sequential、Random）：
 ```
-./page_simulator                        # quick subset
-./page_simulator --benchmark            # full benchmark
+./page_simulator                        # 快速子集
+./page_simulator --benchmark            # 完整基准测试
 ./page_simulator --benchmark --pages 5000 --space 50
 ```
 
-**Mode 3 — Batch trace directory** (all `.gz` files in a folder):
+**模式 3 — 批量 trace 目录**（文件夹内所有 `.gz` 文件）：
 ```
 ./page_simulator --tracedir /path/to/traces
-./page_simulator --tracedir /path/to/traces --limit 100000  # quick test
+./page_simulator --tracedir /path/to/traces --limit 100000  # 快速测试
 ```
 
-All options: `--file`, `--tracedir`, `--pagesize`, `--frames`, `--benchmark`, `--pages`, `--space`, `--limit`, `--help`.
+全部选项：`--file`、`--tracedir`、`--pagesize`、`--frames`、`--benchmark`、`--pages`、`--space`、`--limit`、`--help`。
 
-How to run tests:
+如何运行测试:
+--------
 
-### Original LRU Cache Unit Tests
+### 原始 LRU 缓存单元测试
 
 ```
 mkdir build
@@ -63,18 +62,18 @@ cmake ..
 make check
 ```
 
-### Page Replacement Simulator
+### 页面置换模拟器
 
-Build the simulator:
+构建模拟器：
 
 ```
 cd build
 make page_simulator
 ```
 
-#### Mode 1: Single Trace File
+#### 模式 1：单个 Trace 文件
 
-Read a page trace from a file (supports `.gz` compressed files and hex‑address traces):
+从文件中读取页面 trace（支持 `.gz` 压缩文件和十六进制地址 trace）：
 
 ```
 ./page_simulator --file traces/gcc.log
@@ -82,43 +81,44 @@ Read a page trace from a file (supports `.gz` compressed files and hex‑address
 ./page_simulator --file traces/gpp.gz --frames 4,8,16,32 --pagesize 4096
 ```
 
-#### Mode 2: Built-in Synthetic Traces
+#### 模式 2：内置合成 Trace
 
-Run all built-in traces (Classic1/2, TightLoop, Program, Locality, Sequential, Random):
+运行所有内置 trace（Classic1/2、TightLoop、Program、Locality、Sequential、Random）：
 
 ```
 ./page_simulator --benchmark
 ./page_simulator --benchmark --pages 5000 --space 50
 ```
 
-Without `--benchmark`, a quick subset of built-in traces runs:
+不加 `--benchmark` 时，运行一个快速内置子集：
 
 ```
 ./page_simulator
 ./page_simulator --pages 10000 --space 100
 ```
 
-#### Mode 3: Batch Trace Directory
+#### 模式 3：批量 Trace 目录
 
-Run all `.gz` trace files in a directory:
+运行目录中的所有 `.gz` trace 文件：
 
 ```
 ./page_simulator --tracedir /path/to/traces
 ./page_simulator --tracedir /path/to/traces --pagesize 4096 --frames 8,16,32,64,128
-./page_simulator --tracedir /path/to/traces --limit 100000    # quick test with limited refs
+./page_simulator --tracedir /path/to/traces --limit 100000    # 限制引用数，快速测试
 ```
 
-#### All Options
+#### 全部选项
 
 ```
---file <path>        Read page trace from file
---tracedir <path>    Read all .gz trace files from directory
---pagesize <n>       Page size in bytes (default: 4096)
---frames <n1,...>    Frame counts (default: auto-scaled)
---benchmark          Run all built-in traces
---pages <n>          References per synthetic trace (default: 1000)
---space <n>          Max page number for synthetic traces (default: 30)
---limit <n>          Limit references per trace (default: unlimited)
---help               Show this help
+--file <path>        从文件读取页面 trace
+--tracedir <path>    从目录读取所有 .gz trace 文件
+--pagesize <n>       页大小（字节），默认 4096
+--frames <n1,...>    帧数列表（默认自动缩放）
+--benchmark          运行所有内置 trace
+--pages <n>          合成 trace 的引用数（默认 1000）
+--space <n>          合成 trace 的最大页面号（默认 30）
+--limit <n>          限制每个 trace 的引用数（默认无限制）
+--help               显示帮助信息
 ```
+
 
