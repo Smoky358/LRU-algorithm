@@ -24,26 +24,37 @@ const std::string& from_cache = cache.get("two");
 ### Page Replacement Simulator
 
 Simulates four page replacement algorithms (LRU Counter, LRU Stack,
-Additional-Reference-Bits, Second Chance) on various memory access traces
+Additional-Reference-Bits, Second Chance) on page reference traces
 and outputs results as tables and ASCII bar charts.
 
+Three modes are supported:
+
+**Mode 1 — Single trace file** (supports `.gz` and hex‑address traces):
 ```
 cd build
 make page_simulator
-./page_simulator
+./page_simulator --file traces/gcc.log
+./page_simulator --file traces/emacs.gz --frames 4,8,16,32 --pagesize 4096
 ```
 
-Optional parameters:
+**Mode 2 — Built-in synthetic traces** (Classic, TightLoop, Program, Locality, Sequential, Random):
+```
+./page_simulator                        # quick subset
+./page_simulator --benchmark            # full benchmark
+./page_simulator --benchmark --pages 5000 --space 50
+```
 
+**Mode 3 — Batch trace directory** (all `.gz` files in a folder):
 ```
-./page_simulator --frames 4,8,16       # frame counts to test
-./page_simulator --pages 5000           # page references per trace
-./page_simulator --trace random         # specific trace (sequential, hotloop, random, locality, mixed, all)
+./page_simulator --tracedir /path/to/traces
+./page_simulator --tracedir /path/to/traces --limit 100000  # quick test
 ```
+
+All options: `--file`, `--tracedir`, `--pagesize`, `--frames`, `--benchmark`, `--pages`, `--space`, `--limit`, `--help`.
 
 How to run tests:
 
-### Original LRU Cache Tests
+### Original LRU Cache Unit Tests
 
 ```
 mkdir build
@@ -54,18 +65,60 @@ make check
 
 ### Page Replacement Simulator
 
+Build the simulator:
+
 ```
 cd build
 make page_simulator
+```
+
+#### Mode 1: Single Trace File
+
+Read a page trace from a file (supports `.gz` compressed files and hex‑address traces):
+
+```
+./page_simulator --file traces/gcc.log
+./page_simulator --file traces/emacs.gz
+./page_simulator --file traces/gpp.gz --frames 4,8,16,32 --pagesize 4096
+```
+
+#### Mode 2: Built-in Synthetic Traces
+
+Run all built-in traces (Classic1/2, TightLoop, Program, Locality, Sequential, Random):
+
+```
+./page_simulator --benchmark
+./page_simulator --benchmark --pages 5000 --space 50
+```
+
+Without `--benchmark`, a quick subset of built-in traces runs:
+
+```
 ./page_simulator
+./page_simulator --pages 10000 --space 100
 ```
 
-To customize the simulation:
+#### Mode 3: Batch Trace Directory
+
+Run all `.gz` trace files in a directory:
 
 ```
-./page_simulator --frames 2,4,8,16,32,64    # frame counts (default)
-./page_simulator --pages 10000               # references per trace (default)
-./page_simulator --space 200                 # address space size (default)
-./page_simulator --trace all                 # trace: sequential, hotloop, random, locality, mixed, all
-./page_simulator --help                      # show all options
+./page_simulator --tracedir /path/to/traces
+./page_simulator --tracedir /path/to/traces --pagesize 4096 --frames 8,16,32,64,128
+./page_simulator --tracedir /path/to/traces --limit 100000    # quick test with limited refs
 ```
+
+#### All Options
+
+```
+--file <path>        Read page trace from file
+--tracedir <path>    Read all .gz trace files from directory
+--pagesize <n>       Page size in bytes (default: 4096)
+--frames <n1,...>    Frame counts (default: auto-scaled)
+--benchmark          Run all built-in traces
+--pages <n>          References per synthetic trace (default: 1000)
+--space <n>          Max page number for synthetic traces (default: 30)
+--limit <n>          Limit references per trace (default: unlimited)
+--help               Show this help
+```
+
