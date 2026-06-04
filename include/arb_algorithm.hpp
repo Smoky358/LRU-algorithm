@@ -26,7 +26,7 @@ namespace page {
 
 class ArbAlgorithm {
 public:
-    ArbAlgorithm(int num_frames, int timer_interval = 64)
+    ArbAlgorithm(int num_frames, int timer_interval = 10)
         : _num_frames(num_frames),
           _timer_interval(timer_interval),
           _ref_counter(0),
